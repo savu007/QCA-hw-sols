@@ -33,8 +33,32 @@ module detector (
   output logic dout
 );
 
+logic [2:0] Scurr, Snext;
 
-// to-do: implement the detector logic here
+parameter [2:0] Init = 3'b000,
+                Got1 = 3'b001,
+                Got10 = 3'b010,
+                Got101 = 3'b011,
+                Got1010 = 3'b100;
+
+always_comb @(din, Scurr)
+begin
+  case (Scurr)
+    Init: if(din == 1) Snext = Got1; else Snext = Init;
+    Got1: if(din == 1) Snext = Got1; else Snext = Got10;
+    Got10: if(din == 1) Snext = Got101; else Snext = Init;
+    Got101: if(din == 1) Snext = Got1; else Snext = Got1010;
+    Got1010: if(din == 1) Snext = Got101; else Snext = Init;
+    default: Snext = Init;
+  endcase
+end
+
+always_comb @(Scurr)
+  if (Scurr == Got1010) dout = 1; else dout = 0;
+
+always_ff @(posedge clk)
+  if (rst) Scurr <= Init; else Scurr <= Snext;
+
 
 endmodule
 
