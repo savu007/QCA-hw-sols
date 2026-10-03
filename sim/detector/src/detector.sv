@@ -41,7 +41,7 @@ parameter [2:0] Init = 3'b000,
                 Got101 = 3'b011,
                 Got1010 = 3'b100;
 
-always_comb @(din, Scurr)
+always @(din, Scurr)
 begin
   case (Scurr)
     Init: if(din == 1) Snext = Got1; else Snext = Init;
@@ -53,10 +53,10 @@ begin
   endcase
 end
 
-always_comb @(Scurr)
+always @(Scurr)
   if (Scurr == Got1010) dout = 1; else dout = 0;
 
-always_ff @(posedge clk)
+always @(posedge clk)
   if (rst) Scurr <= Init; else Scurr <= Snext;
 
 
